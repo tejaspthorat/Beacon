@@ -2,6 +2,12 @@
 
 A decoupled, event-driven system for tracking service status updates from 100+ providers (OpenAI, AWS, GitHub, Stripe, etc.) in real time.
 
+![Screenshot of the log](Assets/Screenshot%20from%202026-02-21%2017-19-54.png)
+_The Logging Server (Component B) validating API keys and printing real-time status updates received from the Ingestion Bus, color-coded by severity._
+
+![Screenshot of the slack messages](Assets/Screenshot%20from%202026-02-21%2017-20-16.png)
+_The Slack Socket Mode adapter (Component A) actively listening to a specific channel for outage reports and converting them to standardized JSON payloads._
+
 ---
 
 ## Architecture
