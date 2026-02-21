@@ -12,9 +12,9 @@ runtime.  Provider configs persist in providers.json.
 Usage:
     python ingestion_bus.py
 
-Env vars:
+Env vars (loaded from .env if present):
     LOG_SERVER_URL  -- Component B base URL (default: http://localhost:8000)
-    API_KEY         -- shared secret sent as X-API-KEY (default: dev-secret-key)
+    API_KEY         -- shared secret sent as X-API-KEY (required)
     BUS_PORT        -- port for onboarding API + webhook receiver (default: 8001)
 """
 
@@ -32,16 +32,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 import aiohttp
 import feedparser
 from aiohttp import web
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
 LOG_SERVER_URL = os.environ.get("LOG_SERVER_URL", "http://localhost:8000")
-API_KEY = os.environ.get("API_KEY", "dev-secret-key")
+API_KEY = os.environ["API_KEY"]
 BUS_PORT = int(os.environ.get("BUS_PORT", "8001"))
 PROVIDERS_FILE = Path(__file__).parent / "providers.json"
 

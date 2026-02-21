@@ -11,8 +11,8 @@ Universal Ingestion Bus (Component A).
 Usage:
     python logging_server.py
 
-Env vars:
-    API_KEY  -- shared secret for X-API-KEY auth (default: dev-secret-key)
+Env vars (loaded from .env if present):
+    API_KEY  -- shared secret for X-API-KEY auth (required)
     PORT     -- listen port (default: 8000)
 """
 
@@ -24,16 +24,19 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from enum import Enum
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel
 import uvicorn
+
+load_dotenv()
 
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-API_KEY = os.environ.get("API_KEY", "dev-secret-key")
+API_KEY = os.environ["API_KEY"]
 PORT = int(os.environ.get("PORT", "8000"))
 
 

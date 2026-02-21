@@ -4,3 +4,4 @@ aiohttp>=3.9
 feedparser>=6.0
 pydantic>=2.0
 slack_sdk>=3.27
+python-dotenv>=1.0

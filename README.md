@@ -43,34 +43,40 @@ Every event flowing between the two components uses this contract:
 ### 1. Install dependencies
 
 ```bash
-cd /path/to/bolna-task
 pip install -r requirements.txt
 ```
 
-### 2. Start Component B (Logging Server)
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+# Edit .env and set a strong API_KEY
+```
+
+### 3. Start Component B (Logging Server)
 
 ```bash
 python logging_server.py
 ```
 
-Starts on port **8000**. Override with `PORT=9000 python logging_server.py`.
+Starts on port **8000**. Override in `.env` with `PORT=9000`.
 
-### 3. Start Component A (Ingestion Bus)
+### 4. Start Component A (Ingestion Bus)
 
 ```bash
 python ingestion_bus.py
 ```
 
-Starts on port **8001**. Override with `BUS_PORT=9001 python ingestion_bus.py`.
+Starts on port **8001**. Override in `.env` with `BUS_PORT=9001`.
 
 On startup, the bus loads `providers.json` and starts adapters for each registered provider automatically.
 
-### 4. Test with curl
+### 5. Test with curl
 
 ```bash
 curl -X POST http://localhost:8000/log \
   -H "Content-Type: application/json" \
-  -H "X-API-KEY: dev-secret-key" \
+  -H "X-API-KEY: $API_KEY" \
   -d '{
     "provider": "OpenAI",
     "status": "Chat Completions -- Major Outage",
@@ -277,12 +283,15 @@ There are no threads per provider, no processes, no thread pool. The coroutines 
 
 ## Configuration Reference
 
-| Env Var          | Default             | Component | Purpose                        |
-|------------------|---------------------|-----------|--------------------------------|
-| `API_KEY`        | `dev-secret-key`    | Both      | Shared secret for X-API-KEY    |
-| `PORT`           | `8000`              | B         | Logging server listen port     |
-| `BUS_PORT`       | `8001`              | A         | Ingestion bus listen port      |
-| `LOG_SERVER_URL` | `http://localhost:8000` | A      | Where to POST events           |
+All config lives in a single `.env` file (loaded automatically via `python-dotenv`).
+Copy `.env.example` to `.env` and edit as needed.
+
+| Env Var          | Required | Default             | Component | Purpose                        |
+|------------------|----------|---------------------|-----------|--------------------------------|
+| `API_KEY`        | **Yes**  | --                  | Both      | Shared secret for X-API-KEY    |
+| `PORT`           | No       | `8000`              | B         | Logging server listen port     |
+| `BUS_PORT`       | No       | `8001`              | A         | Ingestion bus listen port      |
+| `LOG_SERVER_URL` | No       | `http://localhost:8000` | A      | Where to POST events           |
 
 ---
 
@@ -290,10 +299,13 @@ There are no threads per provider, no processes, no thread pool. The coroutines 
 
 ```
 /
-  logging_server.py     # Component B -- FastAPI logging server
-  ingestion_bus.py       # Component A -- Universal ingestion bus
-  providers.json         # Persisted provider configurations
-  onboard_examples.py    # Sample onboarding script
-  requirements.txt       # Python dependencies
-  README.md              # This file
+  .env                    # Your local config (git-ignored)
+  .env.example            # Template for new developers
+  .gitignore
+  logging_server.py       # Component B -- FastAPI logging server
+  ingestion_bus.py        # Component A -- Universal ingestion bus
+  providers.json          # Persisted provider configs (git-ignored)
+  onboard_examples.py     # Sample onboarding script
+  requirements.txt        # Python dependencies
+  README.md               # This file
 ```
