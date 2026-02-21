@@ -6,32 +6,7 @@ A decoupled, event-driven system for tracking service status updates from 100+ p
 
 ## Architecture
 
-```
-                     COMPONENT A                                  COMPONENT B
-            Universal Ingestion Bus (:8001)                  Logging Server (:8000)
-+--------------------------------------------------+    +-------------------------+
-|                                                  |    |                         |
-|  +-----------------+                             |    |     POST /log           |
-|  | Slack Adapter   |--- Socket Mode (WebSocket)  |    |     (X-API-KEY auth)    |
-|  | (event-based)   |                             |    |                         |
-|  +-----------------+     +--------------+        |    |   Color-coded console:  |
-|                     +--->| Normalizer   |--POST--+--->|   RED   = major/outage  |
-|  +-----------------+     | (standard    |        |    |   YELLOW = info         |
-|  | Webhook Adapter |---->|  JSON schema)|        |    |   GREEN  = resolved     |
-|  | (event-based)   |     +--------------+        |    |                         |
-|  +-----------------+                             |    +-------------------------+
-|                                                  |
-|  +-----------------+                             |
-|  | RSS Poller      |--- ETag / If-Modified-Since |
-|  | (smart fallback)|                             |
-|  +-----------------+                             |
-|                                                  |
-|  Onboarding API:                                 |
-|    POST   /providers  -- register a provider     |
-|    GET    /providers  -- list all providers       |
-|    DELETE /providers/{name} -- remove a provider  |
-+--------------------------------------------------+
-```
+![Architecture Diagram](Assets/External%20Status%20Provider-2026-02-21-113331.png)
 
 **Component A** ingests events from heterogeneous sources, normalizes them into a standard JSON schema, and POSTs to **Component B**.
 
